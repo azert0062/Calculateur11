@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<title>Calculateur Conciergerie</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --black: #000000;
+  --panel: #0f0f0f;
+  --panel-2: #151515;
+  --border: #1f1f1f;
+  --border-soft: #181818;
+  --gold: #c9a961;
+  --gold-soft: #e0c584;
+  --gold-deep: #8a7340;
+  --ink: #e8e6e0;
+  --ink-dim: #8a8a8a;
+  --ink-faint: #4a4a4a;
+  --success: #4a9d6a;
+  --error: #c85a4a;
+  --warn: #d4a017;
+  --radius: 8px;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+html, body { background: var(--black); }
+body {
+  font-family: var(--font-sans);
+  background: var(--black);
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(201, 169, 97, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 100%, rgba(201, 169, 97, 0.03) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--ink);
+  min-height: 100vh;
+  padding: calc(1.5rem + var(--safe-top)) 1rem calc(6rem + var(--safe-bottom));
+  font-size: 15px;
+  line-height: 1.55;
+  max-width: 760px;
+  margin: 0 auto;
+  letter-spacing: 0.01em;
+  overscroll-behavior: none;
+}
+header { text-align: center; margin-bottom: 2rem; padding: 1.5rem 0 1.8rem; position: relative; }
+header::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+header::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-deep), transparent); opacity: 0.5; }
+.logo-mark { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border: 1px solid var(--gold-deep); border-radius: 50%; margin-bottom: 0.8rem; font-family: var(--font-display); font-size: 1.4rem; color: var(--gold); background: rgba(201, 169, 97, 0.04); }
+h1 { font-family: var(--font-display); font-size: 1.9rem; font-weight: 400; letter-spacing: 0.02em; margin-bottom: 0.4rem; background: linear-gradient(135deg, var(--gold-soft), var(--gold), var(--gold-deep)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; }
+.subtitle { font-size: 0.75rem; color: var(--ink-dim); font-style: italic; letter-spacing: 0.08em; text-transform: uppercase; }
+.section { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1rem; overflow: hidden; }
+.section-header { padding: 1rem 1.2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.6rem; }
+.section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--gold); font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+.section-title::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--gold-deep); }
+.section-content { padding: 1.2rem; }
+.field { margin-bottom: 1rem; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 0.65rem; color: var(--ink-dim); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; }
+.field input, .field select {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--black);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.field input:focus, .field select:focus {
+  outline: none;
+  border-color: var(--gold-deep);
+  box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.08);
+}
+.field select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23c9a961' d='M0 0l5 6 5-6z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 10px;
+  cursor: pointer;
+}
+.field select option { background: var(--panel); color: var(--ink); }
+.field-hint { font-size: 0.65rem; color: var(--ink-faint); margin-top: 0.3rem; font-style: italic; }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+@media (max-width: 500px) { .row-2 { grid-template-columns: 1fr; } }
+
+/* ══════ BÉNÉFICE INLINE ══════ */
+.benefit-inline {
+  margin-top: 1.2rem;
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(201, 169, 97, 0.08), rgba(201, 169, 97, 0.02));
+  border: 1px solid var(--gold-deep);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.benefit-inline.negative {
+  background: linear-gradient(135deg, rgba(200, 90, 74, 0.08), rgba(200, 90, 74, 0.02));
+  border-color: var(--error);
+}
+.benefit-inline-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  color: var(--gold);
+}
+.benefit-inline.negative .benefit-inline-label { color: var(--error); }
+.benefit-inline-value {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+.benefit-inline.negative .benefit-inline-value {
+  background: linear-gradient(135deg, #e0a0a0, var(--error));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ══════ 3 SCÉNARIOS CÔTE À CÔTE ══════ */
+.scenarios-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+@media (min-width: 700px) {
+  .scenarios-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.scenario-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.scenario-card.pessimistic { border-top: 3px solid var(--error); }
+.scenario-card.realistic { border-top: 3px solid var(--gold); }
+.scenario-card.optimistic { border-top: 3px solid var(--success); }
+
+.scenario-card-header {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--border-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.scenario-card-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.scenario-card.pessimistic .scenario-card-title { color: #e0a0a0; }
+.scenario-card.realistic .scenario-card-title { color: var(--gold-soft); }
+.scenario-card.optimistic .scenario-card-title { color: #a0e0b0; }
+
+.scenario-card-icon { font-size: 1rem; }
+.scenario-card-body {
+  padding: 1rem;
+}
+.scenario-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.45rem 0;
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+.scenario-row:last-child { border-bottom: none; }
+.scenario-row-label {
+  color: var(--ink-dim);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.scenario-row-value {
+  font-family: var(--font-mono);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+.scenario-row.highlight {
+  margin-top: 0.6rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--gold-deep);
+  border-bottom: none;
+}
+.scenario-row.highlight .scenario-row-label {
+  color: var(--gold);
+  font-weight: 700;
+}
+.scenario-row.highlight .scenario-row-value {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.scenario-card.pessimistic .scenario-row.highlight .scenario-row-value { color: #e0a0a0; }
+.scenario-card.realistic .scenario-row.highlight .scenario-row-value { color: var(--gold-soft); }
+.scenario-card.optimistic .scenario-row.highlight .scenario-row-value { color: #a0e0b0; }
+
+.scenario-row.negative .scenario-row-value { color: var(--error); }
+
+/* ══════ ADJUSTMENT INPUT DANS CHAQUE CARTE ══════ */
+.scenario-adjust {
+  margin-top: 0.8rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.scenario-adjust-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.scenario-adjust-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.scenario-adjust-input input {
+  flex: 1;
+  padding: 0.55rem 0.7rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  text-align: center;
+}
+.scenario-adjust-input input:focus {
+  outline: none;
+  border-color: var(--gold-deep);
+}
+.scenario-adjust-input span {
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+.scenario-adjust-hint {
+  font-size: 0.58rem;
+  color: var(--ink-faint);
+  margin-top: 0.3rem;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ══════ RESULTS ══════ */
+.results {
+  background: linear-gradient(180deg, #0a0a0a 0%, #050505 100%);
+  border: 1px solid var(--gold-deep);
+  border-radius: var(--radius);
+  padding: 1.4rem 1.3rem;
+  margin-top: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(201, 169, 97, 0.1), 0 8px 32px rgba(201, 169, 97, 0.06);
+}
+.results::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.results-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 0.85rem;
+}
+.result-row:last-child { border-bottom: none; }
+.result-label {
+  color: var(--ink-dim);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+.result-value {
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ══════ FOOTER NOTE ══════ */
+.footer-note {
+  font-size: 0.68rem;
+  color: var(--ink-faint);
+  text-align: center;
+  margin-top: 1.5rem;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  .benefit-inline-value { font-size: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">◈</div>
+  <h1>Calculateur Conciergerie</h1>
+  <p class="subtitle">Rentabilité locative · France</p>
+</header>
+
+<!-- ══════════ VILLE ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Ville</div>
+  </div>
+  <div class="section-content">
+    <div class="field">
+      <label>Choisissez la ville</label>
+      <select id="city-select">
+        <option value="">— Sélectionner —</option>
+        <option value="Paris">Paris</option>
+        <option value="Marseille">Marseille</option>
+        <option value="Lyon">Lyon</option>
+        <option value="Toulouse">Toulouse</option>
+        <option value="Nice">Nice</option>
+        <option value="Nantes">Nantes</option>
+        <option value="Montpellier">Montpellier</option>
+        <option value="Strasbourg">Strasbourg</option>
+        <option value="Bordeaux">Bordeaux</option>
+        <option value="Lille">Lille</option>
+        <option value="Rennes">Rennes</option>
+        <option value="Reims">Reims</option>
+        <option value="Toulon">Toulon</option>
+        <option value="Saint-Étienne">Saint-Étienne</option>
+        <option value="Le Havre">Le Havre</option>
+        <option value="Grenoble">Grenoble</option>
+        <option value="Dijon">Dijon</option>
+        <option value="Angers">Angers</option>
+        <option value="Nîmes">Nîmes</option>
+        <option value="Aix-en-Provence">Aix-en-Provence</option>
+        <option value="Brest">Brest</option>
+        <option value="Le Mans">Le Mans</option>
+        <option value="Tours">Tours</option>
+        <option value="Clermont-Ferrand">Clermont-Ferrand</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ REVENUS ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Revenus locatifs</div>
+  </div>
+  <div class="section-content">
+    <div class="row-2">
+      <div class="field">
+        <label>Prix à la nuitée (€)</label>
+        <input type="number" id="nightly-price" min="0" step="1" placeholder="120" value="120">
+      </div>
+      <div class="field">
+        <label>Taux d'occupation (%)</label>
+        <input type="number" id="occupancy-rate" min="0" max="100" step="1" placeholder="70" value="70">
+        <div class="field-hint">Taux réaliste · base de référence</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Nombre de jours dans le mois</label>
+      <input type="number" id="days-per-month" min="1" max="31" step="1" value="30">
+      <div class="field-hint">Par défaut : 30 jours</div>
+    </div>
+    <div class="field">
+      <label>Chiffre d'affaires mensuel (réaliste)</label>
+      <input type="text" id="monthly-revenue-display" readonly value="0 €" style="color: var(--gold-soft); font-family: var(--font-mono); font-weight: 600;">
+    </div>
+
+    <div class="benefit-inline" id="benefit-inline">
+      <span class="benefit-inline-label">Bénéfice net (réaliste)</span>
+      <span class="benefit-inline-value" id="benefit-inline-value">0 €</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CHARGES ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Charges mensuelles</div>
+  </div>
+  <div class="section-content">
+    <div class="row-2">
+      <div class="field">
+        <label>Loyer (€)</label>
+        <input type="number" id="charge-rent" min="0" step="1" placeholder="0" value="0">
+      </div>
+      <div class="field">
+        <label>Abonnements divers (€)</label>
+        <input type="number" id="charge-subscriptions" min="0" step="1" placeholder="0" value="0">
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label>Ménage (€)</label>
+        <input type="number" id="charge-cleaning" min="0" step="1" placeholder="0" value="0">
+      </div>
+      <div class="field">
+        <label>Expert-comptable (€)</label>
+        <input type="number" id="charge-accountant" min="0" step="1" placeholder="0" value="0">
+      </div>
+    </div>
+    <div class="field">
+      <label>Assurance pro (€)</label>
+      <input type="number" id="charge-insurance" min="0" step="1" placeholder="0" value="0">
+    </div>
+    <div class="field">
+      <label>Total des charges (auto-calculé)</label>
+      <input type="text" id="total-charges-display" readonly value="0 €" style="color: #e0a0a0; font-family: var(--font-mono); font-weight: 600;">
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 3 SCÉNARIOS CÔTE À CÔTE ══════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Comparaison des 3 scénarios</div>
+  </div>
+  <div class="section-content" style="padding-top: 0;">
+
+    <div class="scenarios-grid" id="scenarios-grid">
+
+      <!-- PESSIMISTE -->
+      <div class="scenario-card pessimistic">
+        <div class="scenario-card-header">
+          <div class="scenario-card-title">
+            <span class="scenario-card-icon">▼</span>
+            Pessimiste
+          </div>
+        </div>
+        <div class="scenario-card-body">
+          <div class="scenario-row">
+            <span class="scenario-row-label">Occupation</span>
+            <span class="scenario-row-value" id="p-occupancy">0 %</span>
+          </div>
+          <div class="scenario-row">
+            <span class="scenario-row-label">CA mensuel</span>
+            <span class="scenario-row-value" id="p-revenue">0 €</span>
+          </div>
+          <div class="scenario-row">
+            <span class="scenario-row-label">Charges</span>
+            <span class="scenario-row-value" id="p-charges">0 €</span>
+          </div>
+          <div class="scenario-row highlight">
+            <span class="scenario-row-label">Bénéfice / mois</span>
+            <span class="scenario-row-value" id="p-profit">0 €</span>
+          </div>
+          <div class="scenario-row">
+            <span class="scenario-row-label">Bénéfice / an</span>
+            <span class="scenario-row-value" id="p-yearly">0 €</span>
+          </div>
+
+          <div class="scenario-adjust">
+            <div class="scenario-adjust-label">
+              <span>Ajustement</span>
+            </div>
+            <div class="scenario-adjust-input">
+              <input type="number" id="p-adjust" min="-100" max="200" step="1" value="-30">
+              <span>%</span>
+            </div>
+            <div class="scenario-adjust-hint">Par défaut : −30 %</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RÉALISTE -->
+      <div class="scenario-card realistic">
+        <div class="scenario-card-header">
+          <div class="scenario-card-title">
+            <span class="scenario-card-icon">●</span>
+            Réaliste
+          </div>
+        </div>
+        <div class="scenario-card-body">
+          <div class="scenario-row">
+            <span class="scenario-row-label">Occupation</span>
+            <span class="scenario-row-value" id="r-occupancy">0 %</span>
+          </div>
+          <div class="scenario-row">
+            <span class="scenario-row-label">CA mensuel</span>
+            <span class="scenario-row-value" id="r-revenue">0 €</span>
+          </div>
+          <div class="scenario-row">
+            <span class="scenario-row-label">Charges</span>
+            <span class="scenario-row-value" id="r-charges">0 €</span>
+          </div>
+          <div class="scenario-row highlight">
+            <span class="scenario-row-label">Bénéfice / mois</span>
+            <span class="scenario-row-value" id="r-profit">0 €</span>
+          </div>
+          <div class="scenario-row">
+            <span class="scenario-row-label">Bénéfice / an</span>
+            <span class="scenario-row-value" id="r-yearly">0 €</span>
+          </div>
+
+          <div class="scenario-adjust">
+            <div class="scenario-adjust-label">
+              <span>Ajustement</span>
+            </div>
+            <div class="scenario-adjust-input">
+              <input type="number" id="r-adjust" min="-100" max="200" step="1" value="0">
+              <span>%</span>
+            </div>
+            <div class="scenario-adjust-hint">Base de référence</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPTIMISTE -->
+      <div class="scenario-card optimistic">
+        <div class="scenario-card-header">
+          <div class="scenario-card-title">
+            <span class="scenario-card-icon">▲</span>
+            Optimiste
+          </div>
+        </div>
+        <div class="scenario-card-body">
+          <div class="scenario-row">
+            <span class="scenario-row-label">Occupation</span>
+            <span class="scenario-row-value" id="o-occupancy">0 %</span>
+          </div>
+          <div class="scenario-row">
+            <span class="scenario-row-label">CA mensuel</span>
+            <span class="scenario-row-value" id="o-revenue">0 €</span>
+          </div>
+          <div class="scenario-row">
+            <span class="scenario-row-label">Charges</span>
+            <span class="scenario-row-value" id="o-charges">0 €</span>
+          </div>
+          <div class="scenario-row highlight">
+            <span class="scenario-row-label">Bénéfice / mois</span>
+            <span class="scenario-row-value" id="o-profit">0 €</span>
+          </div>
+          <div class="scenario-row">
+            <span class="scenario-row-label">Bénéfice / an</span>
+            <span class="scenario-row-value" id="o-yearly">0 €</span>
+          </div>
+
+          <div class="scenario-adjust">
+            <div class="scenario-adjust-label">
+              <span>Ajustement</span>
+            </div>
+            <div class="scenario-adjust-input">
+              <input type="number" id="o-adjust" min="-100" max="200" step="1" value="20">
+              <span>%</span>
+            </div>
+            <div class="scenario-adjust-hint">Par défaut : +20 %</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ RÉSULTATS DÉTAILLÉS ══════════ -->
+<div class="results">
+  <div class="results-title">Détail du scénario réaliste</div>
+
+  <div class="result-row">
+    <span class="result-label">Chiffre d'affaires mensuel</span>
+    <span class="result-value" id="result-revenue">0 €</span>
+  </div>
+  <div class="result-row">
+    <span class="result-label">Total des charges</span>
+    <span class="result-value" id="result-charges">0 €</span>
+  </div>
+  <div class="result-row">
+    <span class="result-label">Bénéfice mensuel</span>
+    <span class="result-value" id="result-profit">0 €</span>
+  </div>
+  <div class="result-row">
+    <span class="result-label">Bénéfice annuel estimé</span>
+    <span class="result-value" id="result-yearly">0 €</span>
+  </div>
+</div>
+
+<p class="footer-note">
+  Le scénario <strong style="color:#c9a961;">réaliste</strong> correspond au taux d'occupation saisi.
+  Les scénarios <strong style="color:#e0a0a0;">pessimiste</strong> (−30 %) et <strong style="color:#a0e0b0;">optimiste</strong> (+20 %) sont ajustables manuellement.
+  Les charges restent identiques dans les 3 cas.
+</p>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// UTILITAIRES
+// ══════════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+
+function formatMoney(value) {
+  if (isNaN(value) || !isFinite(value)) return '0 €';
+  const rounded = Math.round(value);
+  return rounded.toLocaleString('fr-FR') + ' €';
+}
+
+function formatPercent(value) {
+  if (isNaN(value) || !isFinite(value)) return '0 %';
+  return Math.round(value) + ' %';
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CALCUL D'UN SCÉNARIO
+// ══════════════════════════════════════════════════════════════════
+function computeScenario(baseRevenue, totalCharges, baseOccupancy, adjustment) {
+  const factor = 1 + (adjustment / 100);
+  const adjustedRevenue = baseRevenue * factor;
+  const adjustedOccupancy = baseOccupancy * factor;
+  const profit = adjustedRevenue - totalCharges;
+  const yearly = profit * 12;
+  return {
+    occupancy: Math.max(0, Math.min(100, adjustedOccupancy)),
+    revenue: adjustedRevenue,
+    charges: totalCharges,
+    profit: profit,
+    yearly: yearly
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MISE À JOUR DES CARTES
+// ══════════════════════════════════════════════════════════════════
+function updateCard(prefix, data) {
+  $(prefix + '-occupancy').textContent = formatPercent(data.occupancy);
+  $(prefix + '-revenue').textContent = formatMoney(data.revenue);
+  $(prefix + '-charges').textContent = formatMoney(data.charges);
+  const profitEl = $(prefix + '-profit');
+  profitEl.textContent = formatMoney(data.profit);
+  $(prefix + '-yearly').textContent = formatMoney(data.yearly);
+
+  // Couleur rouge si négatif
+  const profitRow = profitEl.closest('.scenario-row');
+  profitRow.classList.toggle('negative', data.profit < 0);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CALCUL PRINCIPAL
+// ══════════════════════════════════════════════════════════════════
+function computeAll() {
+  // Données de base
+  const nightlyPrice = parseFloat($('nightly-price').value) || 0;
+  const baseOccupancy = parseFloat($('occupancy-rate').value) || 0;
+  const daysPerMonth = parseFloat($('days-per-month').value) || 30;
+
+  const baseRevenue = nightlyPrice * (baseOccupancy / 100) * daysPerMonth;
+
+  // Charges
+  const totalCharges =
+    (parseFloat($('charge-rent').value) || 0) +
+    (parseFloat($('charge-subscriptions').value) || 0) +
+    (parseFloat($('charge-cleaning').value) || 0) +
+    (parseFloat($('charge-accountant').value) || 0) +
+    (parseFloat($('charge-insurance').value) || 0);
+
+  // Affichage CA mensuel réaliste + charges
+  $('monthly-revenue-display').value = formatMoney(baseRevenue);
+  $('total-charges-display').value = formatMoney(totalCharges);
+
+  // Récupérer les ajustements des 3 cartes
+  const pAdjust = parseFloat($('p-adjust').value) || 0;
+  const rAdjust = parseFloat($('r-adjust').value) || 0;
+  const oAdjust = parseFloat($('o-adjust').value) || 0;
+
+  // Calcul des 3 scénarios
+  const pData = computeScenario(baseRevenue, totalCharges, baseOccupancy, pAdjust);
+  const rData = computeScenario(baseRevenue, totalCharges, baseOccupancy, rAdjust);
+  const oData = computeScenario(baseRevenue, totalCharges, baseOccupancy, oAdjust);
+
+  // Mise à jour des cartes
+  updateCard('p', pData);
+  updateCard('r', rData);
+  updateCard('o', oData);
+
+  // Bénéfice inline (réaliste)
+  const benefitInline = $('benefit-inline');
+  const benefitInlineValue = $('benefit-inline-value');
+  benefitInlineValue.textContent = formatMoney(rData.profit);
+  benefitInline.classList.toggle('negative', rData.profit <
